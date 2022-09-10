@@ -10,6 +10,7 @@ public class Scanner {
 	private int state;
 	private int pos;
 	private char[] contentBuffer;
+	private String[] reservedWords= {"int", "float", "print", "if", "else"};
 	
 	public Scanner(String filename) {
 		try {
@@ -35,8 +36,6 @@ public class Scanner {
 			currentChar = nextChar();
 			switch(state) {
 				case 0:
-					
-					
 					if(isSpace(currentChar) && !isEOF())
 						continue;
 					
@@ -59,6 +58,11 @@ public class Scanner {
 						state= 2;
 					}
 					
+					else if(isDot(currentChar)) {
+						content += '0';
+						content += currentChar;
+					}
+					
 					else if(isMathOperator(currentChar)) {
 						content += currentChar;
 						state = 3;
@@ -74,21 +78,27 @@ public class Scanner {
 						state = 5;
 					}
 					
+					else if(isLeftPar(currentChar)) {
+						content += currentChar;
+						state = 6;
+					}
+					
+					else if(isRightPar(currentChar)) {
+						content += currentChar;
+						state = 7;
+					}
 					
 					else if(isComment(currentChar)) {
-						
 						do {
 							currentChar = nextChar();
 						}while(currentChar != '\n');
 					}
 						
-					
 					else
 						throw new RuntimeException("Unregnized Symbol: " + currentChar);
 					
 					break;
 			
-					
 			 /*Generate TokenType.IDENTIFIER*/
 				case 1:
 					
@@ -97,8 +107,7 @@ public class Scanner {
 					
 					if(isLetter(currentChar) || isNumber(currentChar) || isSpecialCaractere(currentChar)) {
 						content+=currentChar;
-					}
-					
+					}				
 					
 					else if(isInvalid(currentChar))
 						throw new IllegalArgumentException("Lexical Error: Unrecognized Symbol");
@@ -108,6 +117,12 @@ public class Scanner {
 							back();
 						}
 						
+						for(String s : reservedWords) {
+							if(s.equals(content)) {
+								tk = new Token(TokenType.RESERVED_WORD, content);
+								return tk;
+							}
+						}
 						tk = new Token(TokenType.IDENTIFIER, content);
 						return tk;
 					}
@@ -117,11 +132,9 @@ public class Scanner {
 					
 					/*Generate TokenType.NUMBER */
 				case 2:
-					
-					if(isNumber(currentChar)) {
+					if(isNumber(currentChar) || isDot(currentChar)) {
 						content += currentChar;
 					}
-					
 					else if(isAssign(currentChar)) {
 						tk = new Token(TokenType.ASSIGN, Character.toString(currentChar));
 						return tk;
@@ -133,7 +146,13 @@ public class Scanner {
 							back();
 						}
 						
-						tk = new Token(TokenType.NUMBER, content);
+						if(content.contains(".")) {
+							tk = new Token(TokenType.NUMBER_DECIMAL, content);
+						}
+						else {
+							tk = new Token(TokenType.NUMBER_INTEGER, content);
+						}
+						
 						return tk;
 					}
 					
@@ -157,11 +176,8 @@ public class Scanner {
 					tk = new Token(TokenType.MATH_OPERATOR, content);
 					return tk;
 					
-					//throw new IllegalArgumentException("Lexical Error: Unrecognized Symbol: " + currentChar);
-					
-					
+					//throw new IllegalArgumentException("Lexical Error: Unrecognized Symbol: " + currentChar);			
 				
-					
 				case 4:
 					
 					if(isInvalid(currentChar))
@@ -175,15 +191,11 @@ public class Scanner {
 						back();
 					}
 					
-					
 					tk = new Token(TokenType.RELATIONAL_OPERATOR, content);
 					return tk;
-					
-					
-	
+				
 				
 				case 5:
-					
 					if(isInvalid(currentChar))
 						throw new IllegalArgumentException("Unknower Expression");
 					
@@ -194,17 +206,36 @@ public class Scanner {
 					tk = new Token(TokenType.ASSIGN, content);
 					return tk;
 					
-					
-					
-					
-			
+				//Left Parenthesis 	
+				case 6:
+					if(!isEOF()) {
+					back();
+				}
+					tk = new Token(TokenType.LEFT_PAR, content);
+					return tk;
+				
+				//Right Parenthesis 
+				case 7:
+					if(!isEOF()) {
+						back();
+					}
+					tk = new Token(TokenType.RIGHT_PAR, content);
+					return tk;
 			}
-		
 		}
-	
 	}
 	
+	private boolean isDot(char c) {
+		return c == '.';
+	}
 	
+	private boolean isLeftPar(char c) {
+		return c == '(';
+	}
+	
+	private boolean isRightPar(char c) {
+		return c == ')';
+	}
 	
 	private boolean isComment(char c) {
 		return c == '#';
@@ -237,17 +268,12 @@ public class Scanner {
 	}
 	
 	public boolean isInvalid(char c) {
-		return !isLetter(c) && !isNumber(c) && !isOperator(c) && !isSpace(c) && !isAssign(c) && !isEOF();
+		return !isLetter(c) && !isNumber(c) && !isOperator(c) && !isSpace(c) && !isAssign(c) && !isEOF() && !isLeftPar(c) && !isRightPar(c) && !isDot(c);
 	}
 	
 	public boolean isMathOperator(char c) {
 		return c == '+' || c == '-' || c == '*' || c == '/';
 	}
-	
-	
-	
-	
-	
 	
 	private char nextChar() {
 		if(isEOF())
@@ -266,7 +292,4 @@ public class Scanner {
 	private void back() {
 		this.pos--;
 	}
-
-
-
 }
