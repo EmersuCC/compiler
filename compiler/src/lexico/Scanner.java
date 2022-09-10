@@ -1,6 +1,5 @@
 package lexico;
 
-
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -38,9 +37,13 @@ public class Scanner {
 			switch(state) {
 				case 0:
 					
-					if(isSpace(currentChar))
+					
+					if(isSpace(currentChar) && !isEOF())
 						continue;
-											 
+					
+					else if(isEOF())
+						return null;
+						
 					
 					else if (isSpecialCaractere(currentChar)) {
 						content+=currentChar;
@@ -62,24 +65,32 @@ public class Scanner {
 						state = 3;
 					}
 					
-					
-					else if(isAssign(currentChar)) {
+					else if(isOperator(currentChar)) {
 						content += currentChar;
 						state = 4;
 					}
-						
-					/*
-					else if(isSpace(currentChar)){
-						back();
+					
+					else if(isAssign(currentChar)) {
+						content += currentChar;
+						state = 5;
 					}
-					*/
+					
+					
+					else if(isComment(currentChar)) {
+						
+						do {
+							currentChar = nextChar();
+						}while(currentChar != '\n');
+					}
+						
 					
 					else
 						throw new RuntimeException("Unregnized Symbol: " + currentChar);
 					
 					break;
 			
-			
+					
+			 /*Generate TokenType.IDENTIFIER*/
 				case 1:
 					
 					//if(isSpace(currentChar))
@@ -103,7 +114,9 @@ public class Scanner {
 					}
 					
 					break;
+				
 					
+					/*Generate TokenType.NUMBER */
 				case 2:
 					
 					if(isNumber(currentChar)) {
@@ -131,11 +144,16 @@ public class Scanner {
 					
 					break;			
 			
+					
+					//Generate Math Operator
 				case 3:
 					
-					if(!isEOF()) {
-						back();
+					if(isInvalid(currentChar)) {
+						throw new IllegalArgumentException("BAD EXPRESSION: " + content);
 					}
+					
+					else if(!isEOF())
+						back();
 					
 					tk = new Token(TokenType.MATH_OPERATOR, content);
 					return tk;
@@ -143,14 +161,43 @@ public class Scanner {
 					//throw new IllegalArgumentException("Lexical Error: Unrecognized Symbol: " + currentChar);
 					
 					
+				
 					
-			/*	case 4:
-					if(isEOF()) {
-						tk = new Token(TokenType.ASSIGN, content);
-						return tk;
+				case 4:
+					
+					if(isInvalid(currentChar))
+						throw new IllegalArgumentException("Invalid Operator");
+					
+					else if(!isEOF()) {
+						if(currentChar == '=') {
+							content += currentChar;
+							break;
+						}
+						back();
 					}
 					
-					*/
+					
+					tk = new Token(TokenType.RELATIONAL_OPERATOR, content);
+					return tk;
+					
+					
+	
+				
+				case 5:
+					
+					if(isInvalid(currentChar))
+						throw new IllegalArgumentException("Unknower Expression");
+					
+					else if(!isEOF()) {
+						back();
+					}
+					
+					tk = new Token(TokenType.ASSIGN, content);
+					return tk;
+					
+					
+					
+					
 			
 			}
 		
@@ -160,6 +207,10 @@ public class Scanner {
 	
 	
 	
+	private boolean isComment(char c) {
+		return c == '#';
+	}
+
 	public boolean isLetter(char c) {
 		return c>='a' && c<='z' || c>='A' && c<='Z';
 	}
