@@ -20,7 +20,6 @@ public class Scanner {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-			
 	}
 	
 	public Token nextToken() {
