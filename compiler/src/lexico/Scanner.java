@@ -11,6 +11,7 @@ public class Scanner {
 	private int pos;
 	private char[] contentBuffer;
 	private String[] reservedWords= {"int", "float", "print", "if", "else"};
+	private int pCounter = 0;
 	
 	public Scanner(String filename) {
 		try {
@@ -59,8 +60,10 @@ public class Scanner {
 					}
 					
 					else if(isDot(currentChar)) {
+						pCounter++;
 						content += '0';
 						content += currentChar;
+						state = 2;
 					}
 					
 					else if(isMathOperator(currentChar)) {
@@ -132,32 +135,41 @@ public class Scanner {
 					
 					/*Generate TokenType.NUMBER */
 				case 2:
-					if(isNumber(currentChar) || isDot(currentChar)) {
+					if(isNumber(currentChar)) {
 						content += currentChar;
 					}
+					
+					else if(isDot(currentChar)) {
+						pCounter++;
+						content+=currentChar;
+					}
+					
 					else if(isAssign(currentChar)) {
 						tk = new Token(TokenType.ASSIGN, Character.toString(currentChar));
 						return tk;
 					}
 					
-					else if(isOperator(currentChar) || isSpace(currentChar)) {	
+					else if(isOperator(currentChar) || isSpace(currentChar)){	
 						
 						if(!isEOF()) {
 							back();
 						}
 						
 						if(content.contains(".")) {
+							if(pCounter > 1)
+								throw new RuntimeException("Malformed Number: " + content);
 							tk = new Token(TokenType.NUMBER_DECIMAL, content);
 						}
 						else {
 							tk = new Token(TokenType.NUMBER_INTEGER, content);
 						}
 						
+						pCounter = 0;
 						return tk;
 					}
 					
 					else {
-						throw new RuntimeException("Malformed Number");
+						throw new RuntimeException("Malformed Number: " + content);
 					}
 					
 					break;			
