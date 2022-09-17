@@ -12,7 +12,7 @@ public class Scanner {
 	private char[] contentBuffer;
 	private String[] reservedWords= {"int", "float", "print", "if", "else"};
 	private int pCounter = 0;
-	private int nLine = 0;
+	private int nLine = 1;
 	private int nColumn = 0;
 	
 	public Scanner(String filename) {
