@@ -12,7 +12,7 @@ public class Scanner {
 	private char[] contentBuffer;
 	private String[] reservedWords= {"int", "float", "print", "if", "else"};
 	private int pCounter = 0;
-	private int nLine = 1;
+	private int nLine = 0;
 	private int nColumn = 0;
 	
 	public Scanner(String filename) {
@@ -161,11 +161,8 @@ public class Scanner {
 						}
 						
 						if(content.contains(".")) {
-							if(pCounter > 1)
+							if(pCounter > 1 || content.endsWith("."))
 								throw new RuntimeException(error() + "Malformed Number: " + content + currentChar);
-							if(content.endsWith(".")) {
-								content += '0';
-							}
 							tk = new Token(TokenType.NUMBER_DECIMAL, content);
 						}
 						else {
