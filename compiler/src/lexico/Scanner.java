@@ -12,6 +12,8 @@ public class Scanner {
 	private char[] contentBuffer;
 	private String[] reservedWords= {"int", "float", "print", "if", "else"};
 	private int pCounter = 0;
+	private int nLine = 0;
+	private int nColumn = 0;
 	
 	public Scanner(String filename) {
 		try {
@@ -35,11 +37,13 @@ public class Scanner {
 		
 		while(true) {
 			currentChar = nextChar();
+			countLineColumn(currentChar);
+			
 			switch(state) {
 				case 0:
-					if(isSpace(currentChar) && !isEOF())
+					if(isSpace(currentChar) && !isEOF()) {
 						continue;
-					
+					}
 					else if(isEOF())
 						return null;
 						
@@ -50,8 +54,8 @@ public class Scanner {
 					}
 					
 					else if(isLetter(currentChar)) {
-							content += currentChar;
-							state = 1;
+						content += currentChar;
+						state = 1;
 					}
 					
 					else if(isNumber(currentChar)) {
@@ -94,11 +98,12 @@ public class Scanner {
 					else if(isComment(currentChar)) {
 						do {
 							currentChar = nextChar();
+							countLineColumn(currentChar);
 						}while(currentChar != '\n');
 					}
 						
 					else
-						throw new RuntimeException("Unregnized Symbol: " + currentChar);
+						throw new RuntimeException(error() + "Unregnized Symbol: " + currentChar);
 					
 					break;
 			
@@ -113,11 +118,11 @@ public class Scanner {
 					}				
 					
 					else if(isInvalid(currentChar))
-						throw new IllegalArgumentException("Lexical Error: Unrecognized Symbol");
+						throw new IllegalArgumentException(error() + "Lexical Error: Unrecognized Symbol: " + currentChar);
 					
 					else {
 						if(!isEOF()) {
-							back();
+							back(currentChar);
 						}
 						
 						for(String s : reservedWords) {
@@ -152,12 +157,15 @@ public class Scanner {
 					else if(isOperator(currentChar) || isSpace(currentChar)){	
 						
 						if(!isEOF()) {
-							back();
+							back(currentChar);
 						}
 						
 						if(content.contains(".")) {
 							if(pCounter > 1)
-								throw new RuntimeException("Malformed Number: " + content);
+								throw new RuntimeException(error() + "Malformed Number: " + content + currentChar);
+							if(content.endsWith(".")) {
+								content += '0';
+							}
 							tk = new Token(TokenType.NUMBER_DECIMAL, content);
 						}
 						else {
@@ -169,7 +177,7 @@ public class Scanner {
 					}
 					
 					else {
-						throw new RuntimeException("Malformed Number: " + content);
+						throw new RuntimeException(error() + "Malformed Number: " + content + currentChar);
 					}
 					
 					break;			
@@ -179,11 +187,11 @@ public class Scanner {
 				case 3:
 					
 					if(isInvalid(currentChar)) {
-						throw new IllegalArgumentException("BAD EXPRESSION: " + content);
+						throw new IllegalArgumentException(error() + "BAD EXPRESSION: " + content);
 					}
 					
 					else if(!isEOF())
-						back();
+						back(currentChar);
 					
 					tk = new Token(TokenType.MATH_OPERATOR, content);
 					return tk;
@@ -193,14 +201,14 @@ public class Scanner {
 				case 4:
 					
 					if(isInvalid(currentChar))
-						throw new IllegalArgumentException("Invalid Operator");
+						throw new IllegalArgumentException(error() + "Invalid Operator");
 					
 					else if(!isEOF()) {
 						if(currentChar == '=') {
 							content += currentChar;
 							break;
 						}
-						back();
+						back(currentChar);
 					}
 					
 					tk = new Token(TokenType.RELATIONAL_OPERATOR, content);
@@ -209,10 +217,10 @@ public class Scanner {
 				
 				case 5:
 					if(isInvalid(currentChar))
-						throw new IllegalArgumentException("Unknower Expression");
+						throw new IllegalArgumentException(error() + "Unknower Expression");
 					
 					else if(!isEOF()) {
-						back();
+						back(currentChar);
 					}
 					
 					tk = new Token(TokenType.ASSIGN, content);
@@ -221,7 +229,7 @@ public class Scanner {
 				//Left Parenthesis 	
 				case 6:
 					if(!isEOF()) {
-					back();
+					back(currentChar);
 				}
 					tk = new Token(TokenType.LEFT_PAR, content);
 					return tk;
@@ -229,7 +237,7 @@ public class Scanner {
 				//Right Parenthesis 
 				case 7:
 					if(!isEOF()) {
-						back();
+						back(currentChar);
 					}
 					tk = new Token(TokenType.RIGHT_PAR, content);
 					return tk;
@@ -265,7 +273,6 @@ public class Scanner {
 		return c>='0' && c<='9';
 	}
 	
-	
 	public boolean isOperator(char c) {
 		return c =='>' || c=='<' || c == '!';
 	}
@@ -273,7 +280,6 @@ public class Scanner {
 	public boolean isSpace(char c) {
 		return c == ' ' || c == '\n' || c == '\t' || c == '\r';
 	}
-	
 	
 	public boolean isAssign(char c) {
 		return c == '=';
@@ -290,9 +296,11 @@ public class Scanner {
 	private char nextChar() {
 		if(isEOF())
 			return '\0';
-		
-		
 		return this.contentBuffer[pos++];
+	}
+	
+	private String error() {
+		return "Error on line " + nLine + ", column " + nColumn + ". ";
 	}
 
 	private boolean isEOF() {
@@ -301,7 +309,23 @@ public class Scanner {
 		return false;
 	}
 	
-	private void back() {
+	private void back(char currentChar) {
+		if(currentChar != '\n') {
+			nColumn--;
+		}
+		else{
+			nLine--;
+		}
 		this.pos--;
+	}	
+	
+	private void countLineColumn(char currentChar){
+		if(currentChar == '\n') {
+			nLine++;
+			nColumn=0;
+		}
+		else {
+			nColumn++;
+		}
 	}
 }
