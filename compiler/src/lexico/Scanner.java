@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import utils.TokenType;
+import utils.Counter;
 
 public class Scanner {
 	private int state;
@@ -12,8 +13,7 @@ public class Scanner {
 	private char[] contentBuffer;
 	private String[] reservedWords= {"int", "float", "print", "if", "else"};
 	private int pCounter = 0;
-	private int nLine = 0;
-	private int nColumn = 0;
+	private Counter c = new Counter();
 	
 	public Scanner(String filename) {
 		try {
@@ -37,8 +37,8 @@ public class Scanner {
 		
 		while(true) {
 			currentChar = nextChar();
-			countLineColumn(currentChar);
-			
+			c.countLineColumn(currentChar);
+
 			switch(state) {
 				case 0:
 					if(isSpace(currentChar) && !isEOF()) {
@@ -98,7 +98,7 @@ public class Scanner {
 					else if(isComment(currentChar)) {
 						do {
 							currentChar = nextChar();
-							countLineColumn(currentChar);
+							c.countLineColumn(currentChar);
 						}while(currentChar != '\n');
 					}
 						
@@ -297,7 +297,7 @@ public class Scanner {
 	}
 	
 	private String error() {
-		return "Error on line " + nLine + ", column " + nColumn + ". ";
+		return "Error on line " + c.getnLine() + ", column " + c.getnColumn() + ". ";
 	}
 
 	private boolean isEOF() {
@@ -308,21 +308,11 @@ public class Scanner {
 	
 	private void back(char currentChar) {
 		if(currentChar != '\n') {
-			nColumn--;
+			c.decColumn();
 		}
 		else{
-			nLine--;
+			c.decLine();
 		}
 		this.pos--;
 	}	
-	
-	private void countLineColumn(char currentChar){
-		if(currentChar == '\n') {
-			nLine++;
-			nColumn=0;
-		}
-		else {
-			nColumn++;
-		}
-	}
 }
