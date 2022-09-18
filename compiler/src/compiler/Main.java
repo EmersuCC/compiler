@@ -1,5 +1,4 @@
 package compiler;
-
 import lexico.*;
 
 public class Main {
