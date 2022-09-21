@@ -26,6 +26,10 @@ public class Scanner {
 		}
 	}
 	
+	
+	/** 
+	 * @return Token
+	 */
 	public Token nextToken() {
 		Token tk;
 		String content = "";
@@ -246,70 +250,146 @@ public class Scanner {
 		}
 	}
 	
+	
+	/** 
+	 * @param c
+	 * @return boolean
+	 */
 	private boolean isDot(char c) {
 		return c == '.';
 	}
 	
+	
+	/** 
+	 * @param c
+	 * @return boolean
+	 */
 	private boolean isLeftPar(char c) {
 		return c == '(';
 	}
 	
+	
+	/** 
+	 * @param c
+	 * @return boolean
+	 */
 	private boolean isRightPar(char c) {
 		return c == ')';
 	}
 	
+	
+	/** 
+	 * @param c
+	 * @return boolean
+	 */
 	private boolean isComment(char c) {
 		return c == '#';
 	}
 
+	
+	/** 
+	 * @param c
+	 * @return boolean
+	 */
 	public boolean isLetter(char c) {
 		return c>='a' && c<='z' || c>='A' && c<='Z';
 	}
 	
+	
+	/** 
+	 * @param c
+	 * @return boolean
+	 */
 	public boolean isSpecialCaractere(char c) {
 		return c == '_';
 	}
 	
+	
+	/** 
+	 * @param c
+	 * @return boolean
+	 */
 	public boolean isNumber(char c) {
 		return c>='0' && c<='9';
 	}
 	
+	
+	/** 
+	 * @param c
+	 * @return boolean
+	 */
 	public boolean isOperator(char c) {
 		return c =='>' || c=='<' || c == '!';
 	}
 	
+	
+	/** 
+	 * @param c
+	 * @return boolean
+	 */
 	public boolean isSpace(char c) {
 		return c == ' ' || c == '\n' || c == '\t' || c == '\r';
 	}
 	
+	
+	/** 
+	 * @param c
+	 * @return boolean
+	 */
 	public boolean isAssign(char c) {
 		return c == '=';
 	}
 	
+	
+	/** 
+	 * @param c
+	 * @return boolean
+	 */
 	public boolean isInvalid(char c) {
 		return !isLetter(c) && !isNumber(c) && !isOperator(c) && !isSpace(c) && !isAssign(c) && !isEOF() && !isLeftPar(c) && !isRightPar(c) && !isDot(c);
 	}
 	
+	
+	/** 
+	 * @param c
+	 * @return boolean
+	 */
 	public boolean isMathOperator(char c) {
 		return c == '+' || c == '-' || c == '*' || c == '/';
 	}
 	
+	
+	/**
+	 * @return char
+	 */
 	private char nextChar() {
 		if(isEOF())
 			return '\0';
 		return this.contentBuffer[pos++];
 	}
 	
+	
+	/** 
+	 * @return String
+	 */
 	private String error() {
 		return "Error on line " + c.getnLine() + ", column " + c.getnColumn() + ". ";
 	}
 
+	
+	/** 
+	 * @return boolean
+	 */
 	private boolean isEOF() {
 		if(this.pos >= this.contentBuffer.length)
 			return true;
 		return false;
 	}
 	
+	
+	/** 
+	 * @param currentChar
+	 */
 	private void back(char currentChar) {
 		if(currentChar != '\n') {
 			c.decColumn();
