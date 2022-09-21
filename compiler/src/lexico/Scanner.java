@@ -117,10 +117,11 @@ public class Scanner {
 						content+=currentChar;
 					}				
 					
-					else if(isInvalid(currentChar))
+					else if(isInvalid(currentChar) || isComment(currentChar))
 						throw new IllegalArgumentException(error() + "Lexical Error: Unrecognized Symbol: " + currentChar);
-					
+						
 					else {
+						
 						if(!isEOF()) {
 							back(currentChar);
 						}

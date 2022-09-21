@@ -1,7 +1,6 @@
 #thisisa comment
 soma2
 -
-+1.
 /
 *
 10
@@ -18,7 +17,6 @@ soma3
 _isso
 isso_eh_valido
 #something
-testes#
 teste(
 teste2)
 (teste3)
@@ -31,3 +29,5 @@ if
 else
 print
 testes
+#+1.
+testes#
