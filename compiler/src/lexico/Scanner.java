@@ -238,6 +238,9 @@ public class Scanner {
 					}
 					tk = new Token(TokenType.RIGHT_PAR, content);
 					return tk;
+			
+				default:
+					System.out.println("Nothing i can do");
 			}
 		}
 	}
