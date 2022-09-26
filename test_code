@@ -1,4 +1,4 @@
-  teste4
+teste4
 soma2
 -
 #123.321.123
@@ -34,6 +34,8 @@ if
 else
 print
 f_print
+soma_int
+ifelse
 123.132
 #123.321.123
 .23.23
