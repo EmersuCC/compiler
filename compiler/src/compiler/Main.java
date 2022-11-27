@@ -10,6 +10,7 @@ public class Main {
 		do {
 			tk = scanner.nextToken();
 			if(tk!=null)
+				System.out.println(tk.getType());
 				System.out.println(tk);
 			
 		} while (tk != null);
