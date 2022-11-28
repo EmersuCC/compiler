@@ -1,5 +1,6 @@
 package sintatico;
 import java.util.*;
+import exceptions.SyntaxException;
 
 import lexico.Token;
 
@@ -14,13 +15,13 @@ public class gramatica {
 		if(codigo.get(0).getContent().equals(":")) {
 			codigo.remove(0);
 		} else {
-			throw new RuntimeException("Faltou :");
+			throw new SyntaxException("Faltou :");
 		}
 		
 		if(codigo.get(0).getContent().equals("DECLARACOES")) {
 			codigo.remove(0);
 		} else {
-			throw new RuntimeException("Faltaram as declarações");
+			throw new SyntaxException("Faltaram as declaraï¿½ï¿½es");
 		}
 		
 		codigo = listaDeclaracoes(codigo);
@@ -28,13 +29,13 @@ public class gramatica {
 		if(codigo.get(0).getContent().equals(":")) {
 			codigo.remove(0);
 		} else {
-			throw new RuntimeException("Faltou :");
+			throw new SyntaxException("Faltou :");
 		}
 		
 		if(codigo.get(0).getContent().equals("ALGORITMO")) {
 			codigo.remove(0);
 		} else {
-			throw new RuntimeException("Faltou o algoritmo");
+			throw new SyntaxException("Faltou o algoritmo");
 		}
 		codigo = listaComandos(codigo);
 		
@@ -69,7 +70,7 @@ public class gramatica {
 			codigo = comandoRepeticao(codigo);
 		}
 		else {
-			throw new RuntimeException("Não é um comando válido");
+			throw new SyntaxException("Nao eh um comando valido");
 		}
 		return codigo;
 	}
@@ -83,10 +84,10 @@ public class gramatica {
 				codigo = comando(codigo);
 				codigo = comandoCondicao2(codigo);
 			} else {
-				throw new RuntimeException("Faltou then");
+				throw new SyntaxException("Faltou then");
 			}
 		} else {
-			throw new RuntimeException("Faltou if");
+			throw new SyntaxException("Faltou if");
 		}
 		return codigo;
 	}
@@ -99,7 +100,7 @@ public class gramatica {
 			codigo.remove(0);
 			codigo = comando(codigo);
 		} else {
-			throw new RuntimeException("Faltou else");
+			throw new SyntaxException("Faltou else");
 		}
 		return codigo;
 	}
@@ -127,7 +128,7 @@ public class gramatica {
 			codigo.remove(0);
 		}
 		else {
-			throw new RuntimeException("Não é um operador Booleano");			
+			throw new SyntaxException("Nao eh um operador booleano");
 		}
 		return codigo;
 	}
@@ -139,14 +140,14 @@ public class gramatica {
 			if(codigo.get(0).getContent().equals(")")) {
 				codigo.remove(0);
 			} else {
-				throw new RuntimeException("Faltou )");		
+				throw new SyntaxException("Faltou )");		
 			}
 		} else {
 			codigo = expressaoAritmetica(codigo);
 			if(codigo.get(0).getType().toString().equals("RELATIONAL_OPERATOR")) {
 				codigo = expressaoAritmetica(codigo);
 			} else {
-				throw new RuntimeException("Nao e operador relacional");	
+				throw new SyntaxException("Nao e operador relacional");	
 			}
 		}
 		return codigo;
@@ -161,10 +162,10 @@ public class gramatica {
 			if(codigo.get(0).getType().toString().equals("STRING") || codigo.get(0).getType().toString().equals("IDENTIFIER")) {
 				codigo.remove(0);
 			} else {
-				throw new RuntimeException("Não é possível exibir algo que não seja texto ou variável");
+				throw new SyntaxException("Nï¿½o ï¿½ possï¿½vel exibir algo que nï¿½o seja texto ou variï¿½vel");
 			}
 		} else {
-			throw new RuntimeException("Faltou o print");
+			throw new SyntaxException("Faltou o print");
 		}
 		return codigo;
 	}
@@ -175,7 +176,7 @@ public class gramatica {
 			codigo = expressaoRelacional(codigo);
 			codigo = comando(codigo);
 		} else {
-			throw new RuntimeException("Faltou while");
+			throw new SyntaxException("Faltou while");
 		}
 		return codigo;
 	}
@@ -187,10 +188,10 @@ public class gramatica {
 				codigo.remove(0);
 				codigo = expressaoAritmetica(codigo);
 			} else {
-				throw new RuntimeException("Faltou =");
+				throw new SyntaxException("Faltou =");
 			}
 		} else {
-			throw new RuntimeException("O lado esquerdo da função assign não é uma variável");
+			throw new SyntaxException("O lado esquerdo da funï¿½ï¿½o assign nï¿½o ï¿½ uma variï¿½vel");
 		}
 		return codigo;
 	}
@@ -253,7 +254,7 @@ public class gramatica {
 				codigo.remove(0);
 			}
 			else {
-				throw new RuntimeException("Faltou )");	
+				throw new SyntaxException("Faltou )");	
 			}
 		}
 		else if(codigo.get(0).getType().toString().equals("NUMBER_INTEGER") ||
@@ -289,11 +290,11 @@ public class gramatica {
 				codigo.remove(0);
 			}
 			else {
-				throw new RuntimeException("Nome inválido");	
+				throw new SyntaxException("Nome invï¿½lido");	
 			}
 		} 
 		else {
-			throw new RuntimeException("Faltou :");
+			throw new SyntaxException("Faltou :");
 		}
 		return codigo;
 	}
@@ -304,7 +305,7 @@ public class gramatica {
 			codigo.remove(0);
 		}
 		else {
-			throw new RuntimeException("Tipo inválido");
+			throw new SyntaxException("Tipo invï¿½lido");
 		}
 		return codigo;
 	}
