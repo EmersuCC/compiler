@@ -1,0 +1,70 @@
+programa : 
+	':' 'DECLARACOES' listaDeclaracoes ';'
+	':' 'ALGORITMO' listaComandos ';' ;
+
+listaDeclaracoes : 
+	declaracao listaDeclaracoes2 ';';
+listaDeclaracoes2 : 
+	VAZIO | listaDeclaracoes;
+
+declaracao : 
+	tipoVar ':' VARIAVEL;
+
+tipoVar : 
+	'INTEIRO' | 'REAL';
+
+expressaoAritmetica:
+	termoAritmetico expressaoAritmetica2 ';'
+expressaoAritmetica2:
+	expressaoAritmetica3 expressaoAritmetica2 |
+	VAZIO
+expressaoAritmetica3:
+	'+' termoAritmetico |
+	'-' termoAritmetico 
+
+termoAritmetico : 
+	fatorAritmetico termoAritmetico2 ';'
+termoAritmetico2 :
+	termoAritmetico3 termoaritmetico2 | VAZIO 
+termoAritmetico3 : 
+	'*' fatorAritmetico | '/' fatorAritmetico
+
+fatorAritmetico : 
+	NUMINT | NUMREAL | VARIAVEL |
+	'(' expressaoAritmetica ')'
+
+expressaoRelacional : 
+	termoRelacional expressaoRelacional2 ';'
+expressaoRelacional2 : 
+	operadorBooleano expressaoRelacional | VAZIO;
+
+termoRelacional : 
+	expressaoAritmetica operadorRelacional expressaoAritmetica |
+	'(' expressaoRelacional ')';
+
+operadorBooleano : 
+	'E' | 'OU';
+
+listaComandos : 
+	comando listaComandos2 ';' ;
+listaComandos2 :
+	listaComandos | VAZIO;
+
+comando : 
+	comandoAtribuicao | 
+	comandoSaida | 
+	comandoCondicao | 
+	comandoRepeticao;
+
+comandoAtribuicao : 
+	VARIAVEL '=' expressaoAritmetica;
+
+comandoSaida : 
+	'PRINT'  (VARIAVEL | CADEIA);
+
+comandoCondicao : 
+	'IF' expressaoRelacional 'THEN' comando comandoCondicao2 ';' ;
+comandoCondicao2 : 
+	'ELSE' comando | VAZIO;
+
+comandoRepeticao : 'WHILE' expressaoRelacional comando;
